@@ -8,12 +8,12 @@ register_converter(converters.FourDigitYearConverter,
 register_converter(converters.ShoeSizeConverter, 'size')
 
 urlpatterns = [
-    path('', views.index),
-    path('cats/<int:cat_id>/', views.categories),
-    path('archive/<year4:year>/', views.archive),
-    path('size/<size:shoe_size>/', views.by_size),
-    #re_path(r'^archive/(?P<year>[0-9]{4})/', views.archive),
-    path('cats/<slug:cat_slug>/', views.categories_by_slug),
-    path('size30/', views.size30, name='size30'),
+    path('', views.index, name='home'),
+    path('about/', views.about, name='about'),
+    path('addpage/', views.addpage, name='add_page'),
+    path('contact/', views.contact, name='contact'),
+    path('login/', views.login, name='login'),
+    path('post/<int:post_id>/', views.show_post, name='post'),
+    
 ]
 

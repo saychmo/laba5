@@ -3,8 +3,53 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect
 
 
+class MyClass:
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+menu = [{'title': "О сайте", 'url_name': 'about'}, 
+        {'title': "Добавить статью", 'url_name': 'add_page'},
+        {'title': "Обратная связь", 'url_name': 'contact'},
+        {'title': "Войти", 'url_name': 'login'}
+    ]
+
+cats_db = [
+    {'id': 1, 'name': 'Актрисы'},
+    {'id': 2, 'name': 'Певицы'},
+    {'id': 3, 'name': 'Спортсменки'},
+]
+
+data_db = [
+    {'id': 1, 'title': 'Nike', 'content': '''<h1>Nike</h1> Компания, 
+     основанная 25 января 1964 года под названием Blue Ribbon Sports, 
+     официально стала Nike, Inc. в 1978 году[7][8]. Nike продаёт свою продукцию
+      под собственным брендом, а также под марками Nike Golf, Nike Pro, Nike +, 
+     Air Jordan, Nike Blazers, Air Force 1, Nike Dunk, Air Max, Foamposite, Nike Skateboarding, 
+     Nike CR7, Hurley International, Converse[9]. Nike является спонсором многих спортсменов и 
+     спортивных команд по всему миру.''', 'is_published': True},
+    {'id': 2, 'title': 'Adidas', 'content': 'Описание бренда adidas', 'is_published': False},
+    {'id': 3, 'title': 'Puma', 'content': 'Описание бренда puma', 'is_published': True},
+]
+
+def addpage(request):
+    return HttpResponse("Добавление статьи")
+
+def contact(request):
+    return HttpResponse("Обратная связь")
+
+def login(request):
+    return HttpResponse("Авторизация")
+
 def index(request):
-    return HttpResponse("Сайт для покупки кроссовок")
+    data = {
+        'title': 'Главная страница: Покупка кроссовок',
+        'menu': menu,
+        'posts': data_db,
+    }
+
+    return render(request, 'shoes/index.html', context=data)
+
 
 def categories(request, cat_id):
     if cat_id > 50:
@@ -29,3 +74,9 @@ def page_not_found(request, exception):
 
 def size30(request):
     return HttpResponse("<h1>На этом сайты обувь только для взрослых</h1>")
+
+def about(request):
+    return render(request, 'shoes/about.html', {'title': 'О сайте', 'menu': menu})
+
+def show_post(request, post_id):
+    return HttpResponse(f"Отображение статьи с id = {post_id}")

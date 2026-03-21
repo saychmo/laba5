@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul>
+    {% for p in posts %}
+    {% if p.is_published %}
+    <li>
+        <h2>{{p.title}}</h2>
+        {% autoescape off %}
+        <p>{{p.content|linebreaks|truncatewords:50}}</p>
+        {% endautoescape %}
+        <p><a href="post/{{p.id}}/">Читать пост</a></p>
+        {% if not forloop.last %}
+        <hr>
+        {% endif %}
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endblock %}

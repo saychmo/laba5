@@ -1,0 +1,34 @@
+{% load static %}
+{% load shoes_tags %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link type="text/css" href="{% static 'shoes/css/styles.css' %}" rel="stylesheet" />
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="/">
+                <img src="{% static 'shoes/images/logo.png' %}" alt="Logo">
+            </a>
+        </div>
+        
+        <!-- Меню в виде кнопок -->
+        <div class="menu">
+            {% for item in menu %}
+                <a href="{% url item.url_name %}" class="menu-btn">{{ item.title }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <h1>{{title}}</h1>
+    
+    <!-- Вызов тега для отображения категорий -->
+    {% get_categories %}
+    
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
