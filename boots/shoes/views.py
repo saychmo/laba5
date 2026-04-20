@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect
+from .models import Shoes
 
 
 class MyClass:
@@ -15,22 +16,12 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
     ]
 
 cats_db = [
-    {'id': 1, 'name': 'Актрисы'},
-    {'id': 2, 'name': 'Певицы'},
-    {'id': 3, 'name': 'Спортсменки'},
+    {'id': 1, 'name': 'Кроссовки'},
+    {'id': 2, 'name': 'Кеды'},
+    {'id': 3, 'name': 'Ботинки'},
 ]
 
-data_db = [
-    {'id': 1, 'title': 'Nike', 'content': '''<h1>Nike</h1> Компания, 
-     основанная 25 января 1964 года под названием Blue Ribbon Sports, 
-     официально стала Nike, Inc. в 1978 году[7][8]. Nike продаёт свою продукцию
-      под собственным брендом, а также под марками Nike Golf, Nike Pro, Nike +, 
-     Air Jordan, Nike Blazers, Air Force 1, Nike Dunk, Air Max, Foamposite, Nike Skateboarding, 
-     Nike CR7, Hurley International, Converse[9]. Nike является спонсором многих спортсменов и 
-     спортивных команд по всему миру.''', 'is_published': True},
-    {'id': 2, 'title': 'Adidas', 'content': 'Описание бренда adidas', 'is_published': False},
-    {'id': 3, 'title': 'Puma', 'content': 'Описание бренда puma', 'is_published': True},
-]
+
 
 def addpage(request):
     return HttpResponse("Добавление статьи")
@@ -42,14 +33,14 @@ def login(request):
     return HttpResponse("Авторизация")
 
 def index(request):
+    posts = Shoes.published.all()
     data = {
         'title': 'Главная страница: Покупка кроссовок',
         'menu': menu,
-        'posts': data_db,
+        'posts': posts,
     }
 
     return render(request, 'shoes/index.html', context=data)
-
 
 def categories(request, cat_id):
     if cat_id > 50:
@@ -78,5 +69,12 @@ def size30(request):
 def about(request):
     return render(request, 'shoes/about.html', {'title': 'О сайте', 'menu': menu})
 
-def show_post(request, post_id):
-    return HttpResponse(f"Отображение статьи с id = {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Shoes, slug=post_slug)
+    data = {
+        'title': post.title,
+        'menu': menu,
+        'post': post,
+        'cat_selected': 1,
+    }
+    return render(request, 'shoes/post.html', context=data)

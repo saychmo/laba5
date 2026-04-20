@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<ul>
+<ul class="list-articles">
     {% for p in posts %}
     {% if p.is_published %}
     <li>
@@ -9,7 +9,8 @@
         {% autoescape off %}
         <p>{{p.content|linebreaks|truncatewords:50}}</p>
         {% endautoescape %}
-        <p><a href="post/{{p.id}}/">Читать пост</a></p>
+        <div class="clear"></div>
+        <p class="link-read-post"><a href="{{ p.get_absolute_url }}">Читать пост</a></p>
         {% if not forloop.last %}
         <hr>
         {% endif %}
