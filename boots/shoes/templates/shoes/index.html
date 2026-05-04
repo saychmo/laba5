@@ -1,21 +1,36 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <ul class="list-articles">
     {% for p in posts %}
-    {% if p.is_published %}
     <li>
-        <h2>{{p.title}}</h2>
-        {% autoescape off %}
-        <p>{{p.content|linebreaks|truncatewords:50}}</p>
-        {% endautoescape %}
+        <div class="article-panel">
+            <p class="first">Категория: {{ p.cat.name }}</p>
+            <p class="last">Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
+        </div>
+        
+        {% if p.photo %}
+        <img class="img-article-left" src="{{ p.photo.url }}" alt="{{ p.title }}">
+        {% endif %}
+        
+        <h2>{{ p.title }}</h2>
+        
+        <!-- Вывод тегов для каждого поста на главной -->
+        {% with p.tags.all as tags %}
+        {% if tags %}
+        <ul class="tags-list">
+            <li>Теги: </li>
+            {% for t in tags %}
+            <li><a href="{{ t.get_absolute_url }}">{{ t.tag }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        
         <div class="clear"></div>
         <p class="link-read-post"><a href="{{ p.get_absolute_url }}">Читать пост</a></p>
-        {% if not forloop.last %}
-        <hr>
-        {% endif %}
     </li>
-    {% endif %}
     {% endfor %}
 </ul>
 {% endblock %}

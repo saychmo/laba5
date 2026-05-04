@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect
-from .models import Shoes
+from .models import Shoes, TagPost, Category
 
 
 class MyClass:
@@ -78,3 +78,18 @@ def show_post(request, post_slug):
         'cat_selected': 1,
     }
     return render(request, 'shoes/post.html', context=data)
+
+def show_tag_postlist(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Shoes.Status.PUBLISHED)
+    return render(request, 'shoes/index.html', {'posts': posts, 'title': f'Тег: {tag.tag}', 'menu': menu, 'cat_selected': None})
+
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Shoes.published.filter(cat_id=category.pk)
+    data = {
+        'title': f'Рубрика: {category.name}',
+        'posts': posts,
+        'cat_selected': category.pk,
+    }
+    return render(request, 'shoes/index.html', context=data)

@@ -16,7 +16,6 @@
             </a>
         </div>
         
-        <!-- Меню в виде кнопок -->
         <div class="menu">
             {% for item in menu %}
                 <a href="{% url item.url_name %}" class="menu-btn">{{ item.title }}</a>
@@ -25,10 +24,28 @@
     </div>
     <h1>{{title}}</h1>
     
-    <!-- Вызов тега для отображения категорий -->
-    {% get_categories %}
+    <!-- Sidebar слева -->
+    <td valign="top" class="left-chapters">
+        <ul id="leftchapters">
+            {% if cat_selected == 0 or cat_selected is None %}
+            <li class="selected">Все категории</li>
+            {% else %}
+            <li><a href="{% url 'home' %}">Все категории</a></li>
+            {% endif %}
+            
+            {% show_categories cat_selected %}
+            
+            <li class="share">
+                <p>Наш канал</p>
+                <a class="share-yt" href="#" target="_blank" rel="nofollow"></a>
+            </li>
+            
+            <!-- ВЫЗОВ ТЕГОВ (добавить эту строку) -->
+            {% show_all_tags %}
+        </ul>
+    </tr>
     
-    {% block content %}
-    {% endblock %}
+    {% block breadcrumbs %}{% endblock %}
+    {% block content %}{% endblock %}
 </body>
 </html>
