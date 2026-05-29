@@ -12,20 +12,68 @@ class Shoes(models.Model):
         DRAFT = 0, 'Черновик'
         PUBLISHED = 1, 'Опубликовано'
 
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, db_index=True, unique=True)
-    content = models.TextField(blank=True)
-    time_create = models.DateTimeField(auto_now_add=True)
-    time_update = models.DateTimeField(auto_now=True)
-    is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT)
-    cat = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='posts')
-    tags = models.ManyToManyField('TagPost', blank=True, related_name='tags')
-    barcode = models.OneToOneField('Barcode', on_delete=models.SET_NULL, null=True, blank=True, related_name='shoes')
+    title = models.CharField(
+        max_length=255,
+        verbose_name="Название обуви"
+    )
+
+    slug = models.SlugField(
+        max_length=255,
+        db_index=True,
+        unique=True,
+        verbose_name="Slug"
+    )
+
+    content = models.TextField(
+        blank=True,
+        verbose_name="Описание"
+    )
+
+    time_create = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Время создания"
+    )
+
+    time_update = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Время обновления"
+    )
+
+    is_published = models.BooleanField(
+        choices=Status.choices,
+        default=Status.DRAFT,
+        verbose_name="Статус публикации"
+    )
+
+    cat = models.ForeignKey(
+        'Category',
+        on_delete=models.PROTECT,
+        related_name='posts',
+        verbose_name="Категория"
+    )
+
+    tags = models.ManyToManyField(
+        'TagPost',
+        blank=True,
+        related_name='tags',
+        verbose_name="Теги"
+    )
+
+    barcode = models.OneToOneField(
+        'Barcode',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='shoes',
+        verbose_name="Штрихкод"
+    )
 
     objects = models.Manager()
     published = PublishedModel()
 
     class Meta:
+        verbose_name = 'Best shoes'
+        verbose_name_plural = 'Best shoes'
         ordering = ['-time_create']
         indexes = [
             models.Index(fields=['-time_create']),
@@ -39,12 +87,15 @@ class Shoes(models.Model):
     
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name="Категория")
     slug = models.SlugField(max_length=255, unique=True, db_index=True)
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_slug': self.slug})
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class TagPost(models.Model):

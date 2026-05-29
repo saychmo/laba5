@@ -23,3 +23,6 @@ urlpatterns = [
     path('shoes/', include('shoes.urls')),
 ]
 handler404 = page_not_found
+
+admin.site.site_header = "Панель администрирования"
+admin.site.index_title = "О-бувь|Лю-бовь"
