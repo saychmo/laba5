@@ -9,7 +9,7 @@
             <p class="first">Категория: {{ p.cat.name }}</p>
             <p class="last">Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
         </div>
-        
+
         {% if p.photo %}
         <img class="img-article-left" src="{{ p.photo.url }}" alt="{{ p.title }}">
         {% endif %}

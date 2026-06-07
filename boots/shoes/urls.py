@@ -16,5 +16,15 @@ urlpatterns = [
     path('post/<slug:post_slug>/', views.show_post, name='post'),
     path('category/<slug:cat_slug>/', views.show_category, name='category'),
     path('tag/<slug:tag_slug>/', views.show_tag_postlist, name='tag'),
+    path(
+        'addpage-model/',
+        views.addpage_model,
+        name='addpage_model'
+    ),
+    path(
+        'upload/',
+        views.upload_file,
+        name='upload'
+    ),
 ]
 

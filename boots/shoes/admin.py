@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import Shoes, Category
+from django.utils.safestring import mark_safe
 
 
 @admin.register(Shoes)
 class ShoesAdmin(admin.ModelAdmin):
-    list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info')
+    list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info', 'post_photo')
     list_display_links = ('title', )
     ordering = ['time_create', 'title', ]
     list_editable = ('is_published', )
@@ -41,6 +42,15 @@ class ShoesAdmin(admin.ModelAdmin):
             f"Снято с публикации записей: {count}"
         )
 
+    @admin.display(description='Фото')
+    def post_photo(self, shoes):
+
+        if shoes.photo:
+            return mark_safe(
+                f"<img src='{shoes.photo.url}' width='50'>"
+            )
+
+        return "Без фото"
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

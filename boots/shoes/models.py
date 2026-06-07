@@ -68,6 +68,13 @@ class Shoes(models.Model):
         verbose_name="Штрихкод"
     )
 
+    photo = models.ImageField(
+        upload_to='photos/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name='Фото'
+    )
+
     objects = models.Manager()
     published = PublishedModel()
 

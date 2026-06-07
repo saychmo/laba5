@@ -2,6 +2,11 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import redirect
 from .models import Shoes, TagPost, Category
+from .forms import AddPostForm
+import os
+import uuid
+
+from django.conf import settings
 
 
 class MyClass:
@@ -21,10 +26,91 @@ cats_db = [
     {'id': 3, 'name': 'Ботинки'},
 ]
 
+def handle_uploaded_file(f):
 
+    ext = os.path.splitext(f.name)[1]
+
+    unique_name = f"{uuid.uuid4().hex}{ext}"
+
+    file_path = os.path.join(
+        settings.MEDIA_ROOT,
+        'uploads',
+        unique_name
+    )
+
+    os.makedirs(
+        os.path.dirname(file_path),
+        exist_ok=True
+    )
+
+    with open(file_path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return f"uploads/{unique_name}"
+
+from .forms import UploadFileForm
+
+def upload_file(request):
+
+    if request.method == 'POST':
+
+        form = UploadFileForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+            handle_uploaded_file(
+                request.FILES['file']
+            )
+
+    else:
+        form = UploadFileForm()
+
+    return render(
+        request,
+        'shoes/upload.html',
+        {'form': form}
+    )
+
+from .forms import AddPostModelForm
+
+def addpage_model(request):
+
+    if request.method == 'POST':
+        form = AddPostModelForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+
+    else:
+        form = AddPostModelForm()
+
+    return render(
+        request,
+        'shoes/addpage_model.html',
+        {'form': form}
+    )
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+
+        print("VALID =", form.is_valid())
+        print("ERRORS =", form.errors)
+
+        if form.is_valid():
+            print(form.cleaned_data)
+
+    else:
+        form = AddPostForm()
+
+    return render(
+        request,
+        'shoes/addpage.html',
+        {'form': form}
+    )
 
 def contact(request):
     return HttpResponse("Обратная связь")
