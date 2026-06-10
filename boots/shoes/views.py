@@ -75,23 +75,19 @@ def upload_file(request):
     )
 
 from .forms import AddPostModelForm
+from .utils import DataMixin
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
 
-def addpage_model(request):
+class AddPage(CreateView):
+    form_class = AddPostModelForm
+    template_name = 'shoes/addpage_model.html'
+    success_url = reverse_lazy('home')
 
-    if request.method == 'POST':
-        form = AddPostModelForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            form.save()
-
-    else:
-        form = AddPostModelForm()
-
-    return render(
-        request,
-        'shoes/addpage_model.html',
-        {'form': form}
-    )
+    extra_context = {
+        'menu': menu,
+        'title': 'Добавление обуви'
+    }
 
 def addpage(request):
     if request.method == 'POST':
@@ -118,15 +114,22 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
-def index(request):
-    posts = Shoes.published.all()
-    data = {
-        'title': 'Главная страница: Покупка кроссовок',
-        'menu': menu,
-        'posts': posts,
-    }
+from django.views.generic import ListView
 
-    return render(request, 'shoes/index.html', context=data)
+class HomePage(DataMixin, ListView):
+    template_name = 'shoes/index.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        return Shoes.published.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return self.get_mixin_context(
+            context,
+            title='Главная страница: Покупка кроссовок'
+        )
 
 def categories(request, cat_id):
     if cat_id > 50:
@@ -155,27 +158,98 @@ def size30(request):
 def about(request):
     return render(request, 'shoes/about.html', {'title': 'О сайте', 'menu': menu})
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Shoes, slug=post_slug)
-    data = {
-        'title': post.title,
+from django.views.generic import DetailView
+
+class ShowPost(DetailView):
+    model = Shoes
+    template_name = 'shoes/post.html'
+    context_object_name = 'post'
+    slug_url_kwarg = 'post_slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = context['post']
+        context['menu'] = menu
+        context['cat_selected'] = 1
+
+        return context
+
+class TagPostList(ListView):
+    template_name = 'shoes/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_queryset(self):
+        return Shoes.published.filter(
+            tags__slug=self.kwargs['tag_slug']
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        tag = TagPost.objects.get(
+            slug=self.kwargs['tag_slug']
+        )
+
+        context['title'] = f'Тег: {tag.tag}'
+        context['menu'] = menu
+        context['cat_selected'] = None
+
+        return context
+
+class ShowCategory(ListView):
+    template_name = 'shoes/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+    paginate_by = 3
+
+    def get_queryset(self):
+        return Shoes.published.filter(
+            cat__slug=self.kwargs['cat_slug']
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        category = get_object_or_404(
+            Category,
+            slug=self.kwargs['cat_slug']
+        )
+
+        context['title'] = f'Рубрика: {category.name}'
+        context['cat_selected'] = category.pk
+        context['menu'] = menu
+
+        return context
+
+from django.views.generic.edit import UpdateView
+
+class UpdatePage(UpdateView):
+    model = Shoes
+
+    fields = [
+        'title',
+        'content',
+        'photo',
+        'slug',
+        'cat'
+    ]
+
+    template_name = 'shoes/addpage_model.html'
+
+    success_url = reverse_lazy('home')
+
+    extra_context = {
         'menu': menu,
-        'post': post,
-        'cat_selected': 1,
+        'title': 'Редактирование товара'
     }
-    return render(request, 'shoes/post.html', context=data)
 
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Shoes.Status.PUBLISHED)
-    return render(request, 'shoes/index.html', {'posts': posts, 'title': f'Тег: {tag.tag}', 'menu': menu, 'cat_selected': None})
+from django.views.generic.edit import DeleteView
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Shoes.published.filter(cat_id=category.pk)
-    data = {
-        'title': f'Рубрика: {category.name}',
-        'posts': posts,
-        'cat_selected': category.pk,
-    }
-    return render(request, 'shoes/index.html', context=data)
+class DeletePage(DeleteView):
+    model = Shoes
+
+    template_name = 'shoes/delete_confirm.html'
+
+    success_url = reverse_lazy('home')

@@ -61,3 +61,4 @@ class UploadFileForm(forms.Form):
     file = forms.FileField(
         label="Файл"
     )
+
