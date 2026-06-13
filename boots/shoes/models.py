@@ -82,6 +82,12 @@ class Shoes(models.Model):
         verbose_name = 'Best shoes'
         verbose_name_plural = 'Best shoes'
         ordering = ['-time_create']
+        permissions = [
+            (
+                'discount_access',
+                'Can use discount access'
+            ),
+        ]
         indexes = [
             models.Index(fields=['-time_create']),
         ]

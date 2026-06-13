@@ -17,7 +17,6 @@ class MyClass:
 menu = [{'title': "О сайте", 'url_name': 'about'}, 
         {'title': "Добавить статью", 'url_name': 'add_page'},
         {'title': "Обратная связь", 'url_name': 'contact'},
-        {'title': "Войти", 'url_name': 'login'}
     ]
 
 cats_db = [
@@ -77,9 +76,10 @@ def upload_file(request):
 from .forms import AddPostModelForm
 from .utils import DataMixin
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 
-class AddPage(CreateView):
+class AddPage(LoginRequiredMixin, CreateView):
     form_class = AddPostModelForm
     template_name = 'shoes/addpage_model.html'
     success_url = reverse_lazy('home')
@@ -225,7 +225,7 @@ class ShowCategory(ListView):
 
 from django.views.generic.edit import UpdateView
 
-class UpdatePage(UpdateView):
+class UpdatePage(LoginRequiredMixin, UpdateView):
     model = Shoes
 
     fields = [
@@ -247,7 +247,7 @@ class UpdatePage(UpdateView):
 
 from django.views.generic.edit import DeleteView
 
-class DeletePage(DeleteView):
+class DeletePage(LoginRequiredMixin, DeleteView):
     model = Shoes
 
     template_name = 'shoes/delete_confirm.html'

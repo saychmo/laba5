@@ -21,6 +21,46 @@
                 <a href="{% url item.url_name %}" class="menu-btn">{{ item.title }}</a>
             {% endfor %}
         </div>
+
+        <div class="auth-menu">
+
+            {% if user.is_authenticated %}
+
+                <a href="{% url 'users:profile' %}"
+                class="menu-btn">
+                    {{ user.username }}
+                </a>
+
+                <a href="{% url 'users:password_change' %}"
+                class="menu-btn">
+                    Сменить пароль
+                </a>
+
+                <form action="{% url 'users:logout' %}"
+                    method="post"
+                    style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="menu-btn">
+                        Выйти
+                    </button>
+                </form>
+
+            {% else %}
+
+                <a href="{% url 'users:login' %}"
+                class="menu-btn">
+                    Войти
+                </a>
+
+                <a href="{% url 'users:register' %}"
+                class="menu-btn">
+                    Регистрация
+                </a>
+
+            {% endif %}
+
+        </div>
     </div>
     <h1>{{title}}</h1>
     

@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('shoes/', include('shoes.urls')),
+    path('users/', include('users.urls')),
 ]
 handler404 = page_not_found
 
