@@ -42,7 +42,12 @@ class AddPostForm(forms.Form):
         max_length=255,
         min_length=5,
         validators=[russian_validator],
-        label="Заголовок"
+        label="Заголовок",
+        error_messages={
+            'required': 'Поле обязательно для заполнения.',
+            'min_length': 'Минимальная длина названия составляет 5 символов.',
+            'max_length': 'Максимальная длина названия составляет 255 символов.'
+        }
     )
 
     slug = forms.SlugField(

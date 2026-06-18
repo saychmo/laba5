@@ -9,7 +9,7 @@ register_converter(converters.ShoeSizeConverter, 'size')
 
 urlpatterns = [
     path('', views.HomePage.as_view(), name='home'),
-    path('about/', views.about, name='about'),
+    path('about/', views.AboutPage.as_view(), name='about'),
     path('addpage/', views.addpage, name='add_page'),
     path('contact/', views.contact, name='contact'),
     path('login/', views.login, name='login'),

@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 
 @admin.register(Shoes)
 class ShoesAdmin(admin.ModelAdmin):
-    list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info', 'post_photo')
+    list_display = ('title', 'time_create', 'is_published', 'cat', 'brief_info', 'post_photo', 'tags_count')
     list_display_links = ('title', )
     ordering = ['time_create', 'title', ]
     list_editable = ('is_published', )
@@ -27,6 +27,9 @@ class ShoesAdmin(admin.ModelAdmin):
     @admin.display(description="Краткое описание")  
     def brief_info(self, shoes: Shoes):
         return f"Описание {len(shoes.content)} символов."
+    @admin.display(description="Количество тегов")
+    def tags_count(self, shoes):
+        return shoes.tags.count()
     @admin.action(description="Опубликовать выбранные записи")
     def set_published(self, request, queryset):
         count = queryset.update(is_published=True)

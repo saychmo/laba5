@@ -155,8 +155,15 @@ def page_not_found(request, exception):
 def size30(request):
     return HttpResponse("<h1>На этом сайты обувь только для взрослых</h1>")
 
-def about(request):
-    return render(request, 'shoes/about.html', {'title': 'О сайте', 'menu': menu})
+from django.views.generic import TemplateView
+
+class AboutPage(TemplateView):
+    template_name = 'shoes/about.html'
+
+    extra_context = {
+        'title': 'О сайте',
+        'menu': menu
+    }
 
 from django.views.generic import DetailView
 
