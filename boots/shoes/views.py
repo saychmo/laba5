@@ -1,12 +1,35 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import redirect
-from .models import Shoes, TagPost, Category
-from .forms import AddPostForm
 import os
 import uuid
 
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import (
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseNotFound,
+    HttpResponseRedirect,
+)
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic.edit import (
+    CreateView,
+    DeleteView,
+    UpdateView,
+)
+
+from .forms import (
+    AddPostForm,
+    AddPostModelForm,
+    CommentForm,
+    UploadFileForm,
+)
+from .models import Category, Comment, Shoes, TagPost
+from .utils import DataMixin
 
 
 class MyClass:
@@ -14,10 +37,22 @@ class MyClass:
         self.a = a
         self.b = b
 
-menu = [{'title': "О сайте", 'url_name': 'about'}, 
-        {'title': "Добавить статью", 'url_name': 'add_page'},
-        {'title': "Обратная связь", 'url_name': 'contact'},
-    ]
+
+menu = [
+    {
+        'title': "О сайте",
+        'url_name': 'about'
+    },
+    {
+        'title': "Добавить статью",
+        'url_name': 'add_page'
+    },
+    {
+        'title': "Обратная связь",
+        'url_name': 'contact'
+    },
+]
+
 
 cats_db = [
     {'id': 1, 'name': 'Кроссовки'},
@@ -25,8 +60,8 @@ cats_db = [
     {'id': 3, 'name': 'Ботинки'},
 ]
 
-def handle_uploaded_file(f):
 
+def handle_uploaded_file(f):
     ext = os.path.splitext(f.name)[1]
 
     unique_name = f"{uuid.uuid4().hex}{ext}"
@@ -48,12 +83,9 @@ def handle_uploaded_file(f):
 
     return f"uploads/{unique_name}"
 
-from .forms import UploadFileForm
 
 def upload_file(request):
-
     if request.method == 'POST':
-
         form = UploadFileForm(
             request.POST,
             request.FILES
@@ -73,11 +105,6 @@ def upload_file(request):
         {'form': form}
     )
 
-from .forms import AddPostModelForm
-from .utils import DataMixin
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import CreateView
 
 class AddPage(LoginRequiredMixin, CreateView):
     form_class = AddPostModelForm
@@ -89,12 +116,15 @@ class AddPage(LoginRequiredMixin, CreateView):
         'title': 'Добавление обуви'
     }
 
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+
+        return super().form_valid(form)
+
+
 def addpage(request):
     if request.method == 'POST':
         form = AddPostForm(request.POST)
-
-        print("VALID =", form.is_valid())
-        print("ERRORS =", form.errors)
 
         if form.is_valid():
             print(form.cleaned_data)
@@ -108,13 +138,14 @@ def addpage(request):
         {'form': form}
     )
 
+
 def contact(request):
     return HttpResponse("Обратная связь")
+
 
 def login(request):
     return HttpResponse("Авторизация")
 
-from django.views.generic import ListView
 
 class HomePage(DataMixin, ListView):
     template_name = 'shoes/index.html'
@@ -131,31 +162,53 @@ class HomePage(DataMixin, ListView):
             title='Главная страница: Покупка кроссовок'
         )
 
+
 def categories(request, cat_id):
     if cat_id > 50:
         return HttpResponseRedirect('/')
+
     if cat_id < 30:
         return redirect('size30')
-    return HttpResponse(f"<h1>Кроссовки по размеру:</h1><p >id: {cat_id}</p>")
+
+    return HttpResponse(
+        f"<h1>Кроссовки по размеру:</h1>"
+        f"<p>id: {cat_id}</p>"
+    )
+
 
 def categories_by_slug(request, cat_slug):
     if request.POST:
         print(request.POST)
-    return HttpResponse(f"<h1>Статьи по категориям</h1>slug: {cat_slug}</p>")
+
+    return HttpResponse(
+        f"<h1>Статьи по категориям</h1>"
+        f"<p>slug: {cat_slug}</p>"
+    )
+
 
 def archive(request, year):
-    return HttpResponse(f"<h1>Архив по годам</h1><p>{year}</p>")
+    return HttpResponse(
+        f"<h1>Архив по годам</h1><p>{year}</p>"
+    )
+
 
 def by_size(request, shoe_size):
-    return HttpResponse(f"Показана обувь {shoe_size} размера")
+    return HttpResponse(
+        f"Показана обувь {shoe_size} размера"
+    )
+
 
 def page_not_found(request, exception):
-    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
+    return HttpResponseNotFound(
+        '<h1>Страница не найдена</h1>'
+    )
+
 
 def size30(request):
-    return HttpResponse("<h1>На этом сайты обувь только для взрослых</h1>")
+    return HttpResponse(
+        "<h1>На этом сайте обувь только для взрослых</h1>"
+    )
 
-from django.views.generic import TemplateView
 
 class AboutPage(TemplateView):
     template_name = 'shoes/about.html'
@@ -165,7 +218,6 @@ class AboutPage(TemplateView):
         'menu': menu
     }
 
-from django.views.generic import DetailView
 
 class ShowPost(DetailView):
     model = Shoes
@@ -176,11 +228,26 @@ class ShowPost(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['title'] = context['post']
+        post = context['post']
+
+        context['title'] = post
         context['menu'] = menu
         context['cat_selected'] = 1
 
+        context['comment_form'] = CommentForm()
+        context['comments'] = post.comments.all()
+
+        if self.request.user.is_authenticated:
+            context['user_liked'] = post.likes.filter(
+                user=self.request.user
+            ).exists()
+        else:
+            context['user_liked'] = False
+
+        context['likes_count'] = post.likes.count()
+
         return context
+
 
 class TagPostList(ListView):
     template_name = 'shoes/index.html'
@@ -204,6 +271,7 @@ class TagPostList(ListView):
         context['cat_selected'] = None
 
         return context
+
 
 class ShowCategory(ListView):
     template_name = 'shoes/index.html'
@@ -230,7 +298,6 @@ class ShowCategory(ListView):
 
         return context
 
-from django.views.generic.edit import UpdateView
 
 class UpdatePage(LoginRequiredMixin, UpdateView):
     model = Shoes
@@ -252,7 +319,16 @@ class UpdatePage(LoginRequiredMixin, UpdateView):
         'title': 'Редактирование товара'
     }
 
-from django.views.generic.edit import DeleteView
+    def dispatch(self, request, *args, **kwargs):
+        shoe = self.get_object()
+
+        if shoe.author != request.user:
+            return HttpResponseForbidden(
+                'У вас нет прав для редактирования этой обуви.'
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
 
 class DeletePage(LoginRequiredMixin, DeleteView):
     model = Shoes
@@ -260,3 +336,61 @@ class DeletePage(LoginRequiredMixin, DeleteView):
     template_name = 'shoes/delete_confirm.html'
 
     success_url = reverse_lazy('home')
+
+    def dispatch(self, request, *args, **kwargs):
+        shoe = self.get_object()
+
+        if shoe.author != request.user:
+            return HttpResponseForbidden(
+                'У вас нет прав для удаления этой обуви.'
+            )
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class AddCommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        shoe = get_object_or_404(
+            Shoes,
+            pk=self.kwargs['shoe_id']
+        )
+
+        form.instance.author = self.request.user
+        form.instance.shoe = shoe
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        shoe = get_object_or_404(
+            Shoes,
+            pk=self.kwargs['shoe_id']
+        )
+
+        return shoe.get_absolute_url()
+
+
+class LikeView(LoginRequiredMixin, CreateView):
+    def post(self, request, *args, **kwargs):
+        shoe = get_object_or_404(
+            Shoes,
+            pk=self.kwargs['shoe_id']
+        )
+
+        like = shoe.likes.filter(
+            user=request.user
+        ).first()
+
+        if like:
+            like.delete()
+        else:
+            from .models import Like
+
+            Like.objects.create(
+                shoe=shoe,
+                user=request.user
+            )
+
+        return redirect(shoe.get_absolute_url())

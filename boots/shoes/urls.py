@@ -1,23 +1,57 @@
-from django.urls import path, re_path, register_converter
-from shoes import views
-from shoes import converters
+from django.urls import path
 
+from . import views
 
-register_converter(converters.FourDigitYearConverter,
-"year4")
-register_converter(converters.ShoeSizeConverter, 'size')
 
 urlpatterns = [
-    path('', views.HomePage.as_view(), name='home'),
-    path('about/', views.AboutPage.as_view(), name='about'),
-    path('addpage/', views.addpage, name='add_page'),
-    path('contact/', views.contact, name='contact'),
-    path('login/', views.login, name='login'),
-    path('post/<slug:post_slug>/', views.ShowPost.as_view(), name='post'),
-    path('category/<slug:cat_slug>/', views.ShowCategory.as_view(), name='category'),
-    path('tag/<slug:tag_slug>/', views.TagPostList.as_view(), name='tag'),
-    path('addpage-model/', views.AddPage.as_view(), name='addpage_model'),
-    path('upload/', views.upload_file, name='upload'),
+    path(
+        '',
+        views.HomePage.as_view(),
+        name='home'
+    ),
+
+    path(
+        'about/',
+        views.AboutPage.as_view(),
+        name='about'
+    ),
+
+    path(
+        'add/',
+        views.AddPage.as_view(),
+        name='add_page'
+    ),
+
+    path(
+        'add-form/',
+        views.addpage,
+        name='add_form'
+    ),
+
+    path(
+        'contact/',
+        views.contact,
+        name='contact'
+    ),
+
+    path(
+        'post/<slug:post_slug>/',
+        views.ShowPost.as_view(),
+        name='post'
+    ),
+
+    path(
+        'category/<slug:cat_slug>/',
+        views.ShowCategory.as_view(),
+        name='category'
+    ),
+
+    path(
+        'tag/<slug:tag_slug>/',
+        views.TagPostList.as_view(),
+        name='tag'
+    ),
+
     path(
         'edit/<int:pk>/',
         views.UpdatePage.as_view(),
@@ -28,5 +62,23 @@ urlpatterns = [
         'delete/<int:pk>/',
         views.DeletePage.as_view(),
         name='delete_page'
+    ),
+
+    path(
+        'post/<int:shoe_id>/comment/',
+        views.AddCommentView.as_view(),
+        name='add_comment'
+    ),
+
+    path(
+        'post/<int:shoe_id>/like/',
+        views.LikeView.as_view(),
+        name='like'
+    ),
+
+    path(
+        'upload/',
+        views.upload_file,
+        name='upload'
     ),
 ]

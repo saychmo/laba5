@@ -5,87 +5,110 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <link type="text/css" href="{% static 'shoes/css/styles.css' %}" rel="stylesheet" />
+    <title>{{ title }}</title>
+    <link type="text/css" href="{% static 'shoes/css/styles.css' %}" rel="stylesheet">
 </head>
+
 <body>
-    <div class="header">
-        <div class="logo">
-            <a href="/">
-                <img src="{% static 'shoes/images/logo.png' %}" alt="Logo">
-            </a>
-        </div>
-        
-        <div class="menu">
-            {% for item in menu %}
-                <a href="{% url item.url_name %}" class="menu-btn">{{ item.title }}</a>
-            {% endfor %}
-        </div>
 
-        <div class="auth-menu">
+<header class="header">
 
-            {% if user.is_authenticated %}
-
-                <a href="{% url 'users:profile' %}"
-                class="menu-btn">
-                    {{ user.username }}
-                </a>
-
-                <a href="{% url 'users:password_change' %}"
-                class="menu-btn">
-                    Сменить пароль
-                </a>
-
-                <form action="{% url 'users:logout' %}"
-                    method="post"
-                    style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit"
-                            class="menu-btn">
-                        Выйти
-                    </button>
-                </form>
-
-            {% else %}
-
-                <a href="{% url 'users:login' %}"
-                class="menu-btn">
-                    Войти
-                </a>
-
-                <a href="{% url 'users:register' %}"
-                class="menu-btn">
-                    Регистрация
-                </a>
-
-            {% endif %}
-
-        </div>
+    <div class="logo">
+        <a href="/">
+            <img src="{% static 'shoes/images/logo.png' %}" alt="Logo">
+        </a>
     </div>
-    <h1>{{title}}</h1>
-    
-    <!-- Sidebar слева -->
-    <td valign="top" class="left-chapters">
+
+    <nav class="menu">
+        {% for item in menu %}
+            <a href="{% url item.url_name %}" class="menu-btn">
+                {{ item.title }}
+            </a>
+        {% endfor %}
+    </nav>
+
+    <div class="auth-menu">
+
+        {% if user.is_authenticated %}
+
+            <a href="{% url 'users:profile' %}" class="menu-btn">
+                {{ user.username }}
+            </a>
+
+            <a href="{% url 'users:password_change' %}" class="menu-btn">
+                Сменить пароль
+            </a>
+
+            <form action="{% url 'users:logout' %}"
+                  method="post"
+                  class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="menu-btn">
+                    Выйти
+                </button>
+            </form>
+
+        {% else %}
+
+            <a href="{% url 'users:login' %}" class="menu-btn">
+                Войти
+            </a>
+
+            <a href="{% url 'users:register' %}" class="menu-btn">
+                Регистрация
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</header>
+
+
+<h1 class="page-title">{{ title }}</h1>
+
+
+<div class="page-layout">
+
+    <aside class="left-chapters">
+
         <ul id="leftchapters">
+
             {% if cat_selected == 0 or cat_selected is None %}
-            <li class="selected">Все категории</li>
+                <li class="selected">Все категории</li>
             {% else %}
-            <li><a href="{% url 'home' %}">Все категории</a></li>
+                <li>
+                    <a href="{% url 'home' %}">Все категории</a>
+                </li>
             {% endif %}
-            
+
             {% show_categories cat_selected %}
-            
+
             <li class="share">
                 <p>Наш канал</p>
-                <a class="share-yt" href="#" target="_blank" rel="nofollow"></a>
+                <a class="share-yt"
+                   href="#"
+                   target="_blank"
+                   rel="nofollow">
+                </a>
             </li>
-            
-            <!-- ВЫЗОВ ТЕГОВ (добавить эту строку) -->
+
             {% show_all_tags %}
+
         </ul>
-    </tr>
-    
-    {% block breadcrumbs %}{% endblock %}
-    {% block content %}{% endblock %}
+
+    </aside>
+
+
+    <main class="content">
+
+        {% block breadcrumbs %}{% endblock %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+</div>
+
 </body>
 </html>

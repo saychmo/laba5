@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django import forms
-from .models import Shoes
+
+from .models import Shoes, Comment
+
 
 class AddPostModelForm(forms.ModelForm):
 
@@ -17,7 +18,7 @@ class AddPostModelForm(forms.ModelForm):
             'barcode',
             'tags'
         ]
-    
+
     def clean_title(self):
         title = self.cleaned_data['title']
 
@@ -30,13 +31,18 @@ class AddPostModelForm(forms.ModelForm):
 
 
 def russian_validator(value):
-    allowed = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯабвгдеёжзийклмнопрстуфхцчшщьыъэюя0123456789- "
-    print("Валидатор вызван:", value)
-    if not(set(value) <= set(allowed)):
+    allowed = (
+        "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ"
+        "абвгдеёжзийклмнопрстуфхцчшщьыъэюя"
+        "0123456789- "
+    )
+
+    if not set(value) <= set(allowed):
         raise ValidationError(
             "Только русские буквы"
         )
-    
+
+
 class AddPostForm(forms.Form):
     title = forms.CharField(
         max_length=255,
@@ -45,8 +51,12 @@ class AddPostForm(forms.Form):
         label="Заголовок",
         error_messages={
             'required': 'Поле обязательно для заполнения.',
-            'min_length': 'Минимальная длина названия составляет 5 символов.',
-            'max_length': 'Максимальная длина названия составляет 255 символов.'
+            'min_length': (
+                'Минимальная длина названия составляет 5 символов.'
+            ),
+            'max_length': (
+                'Максимальная длина названия составляет 255 символов.'
+            )
         }
     )
 
@@ -67,3 +77,20 @@ class UploadFileForm(forms.Form):
         label="Файл"
     )
 
+
+class CommentForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ['text']
+        labels = {
+            'text': 'Комментарий'
+        }
+        widgets = {
+            'text': forms.Textarea(
+                attrs={
+                    'rows': 4,
+                    'placeholder': 'Введите комментарий...'
+                }
+            )
+        }

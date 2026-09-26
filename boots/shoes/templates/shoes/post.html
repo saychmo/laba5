@@ -1,23 +1,208 @@
 {% extends 'base.html' %}
 
-{% block breadcrumbs %}
-<!-- Теги -->
-{% with post.tags.all as tags %}
-{% if tags %}
-<ul class="tags-list">
-    <li>Теги: </li>
-    {% for t in tags %}
-    <li><a href="{{ t.get_absolute_url }}">{{ t.tag }}</a></li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endwith %}
-{% endblock %}
-
 {% block content %}
-<h1>{{post.title}}</h1>
-{% if post.photo %}
-<p><img class="img-article-left" src="{{post.photo.url}}"></p>
-{% endif %}
-{{post.content|linebreaks}}
+
+<article class="post-detail">
+
+    <h1>{{ post.title }}</h1>
+
+    {% if post.photo %}
+        <div class="post-photo">
+            <img
+                src="{{ post.photo.url }}"
+                alt="{{ post.title }}"
+                style="max-width: 500px;"
+            >
+        </div>
+    {% endif %}
+
+    <div class="post-info">
+
+        <p>
+            <strong>Автор:</strong>
+            {{ post.author.username }}
+        </p>
+
+        <p>
+            <strong>Категория:</strong>
+            {{ post.cat.name }}
+        </p>
+
+        {% if post.tags.all %}
+            <p>
+                <strong>Теги:</strong>
+
+                {% for tag in post.tags.all %}
+                    <a href="{{ tag.get_absolute_url }}">
+                        #{{ tag.tag }}
+                    </a>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <p>
+            <strong>Дата создания:</strong>
+            {{ post.time_create|date:"d.m.Y H:i" }}
+        </p>
+
+    </div>
+
+    <div class="post-content">
+        {{ post.content|linebreaks }}
+    </div>
+
+
+    <!-- ЛАЙК -->
+
+    <div class="like-section">
+
+        {% if user.is_authenticated %}
+
+            <form
+                method="post"
+                action="{% url 'like' post.pk %}"
+            >
+                {% csrf_token %}
+
+                <button type="submit">
+
+                    {% if user_liked %}
+                        ♥ Убрать лайк
+                    {% else %}
+                        ♡ Нравится
+                    {% endif %}
+
+                </button>
+
+                <span>
+                    {{ likes_count }}
+                </span>
+
+            </form>
+
+        {% else %}
+
+            <p>
+                Чтобы поставить лайк,
+                <a href="{% url 'users:login' %}">
+                    войдите в аккаунт
+                </a>.
+            </p>
+
+            <p>
+                ♥ {{ likes_count }}
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- КНОПКИ АВТОРА -->
+
+    {% if user.is_authenticated and user == post.author %}
+
+        <div class="author-actions">
+
+            <h3>Управление публикацией</h3>
+
+            <a href="{% url 'edit_page' post.pk %}">
+                Редактировать
+            </a>
+
+            <a href="{% url 'delete_page' post.pk %}">
+                Удалить
+            </a>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- КОММЕНТАРИИ -->
+
+    <section class="comments">
+
+        <h2>
+            Комментарии
+            ({{ comments|length }})
+        </h2>
+
+
+        {% if comments %}
+
+            {% for comment in comments %}
+
+                <div class="comment">
+
+                    <div class="comment-header">
+
+                        <strong>
+                            {{ comment.author.username }}
+                        </strong>
+
+                        <small>
+                            {{ comment.time_create|date:"d.m.Y H:i" }}
+                        </small>
+
+                    </div>
+
+                    <p>
+                        {{ comment.text|linebreaks }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>
+                Пока нет комментариев.
+                Будьте первым!
+            </p>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ФОРМА КОММЕНТАРИЯ -->
+
+    <section class="comment-form">
+
+        <h2>Оставить комментарий</h2>
+
+        {% if user.is_authenticated %}
+
+            <form
+                method="post"
+                action="{% url 'add_comment' post.pk %}"
+            >
+
+                {% csrf_token %}
+
+                {{ comment_form.as_p }}
+
+                <button type="submit">
+                    Добавить комментарий
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <p>
+                Чтобы оставить комментарий,
+                <a href="{% url 'users:login' %}">
+                    войдите в аккаунт
+                </a>.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+</article>
+
 {% endblock %}

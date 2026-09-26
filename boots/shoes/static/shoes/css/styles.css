@@ -407,3 +407,287 @@ ul.lang-list li a:hover {color: #fdc073;}
     min-width: 200px;
     font-size: 16px;
 }
+
+/* =========================
+   ОСНОВНАЯ СТРУКТУРА
+   ========================= */
+
+body {
+    background: #fff;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    height: auto;
+    padding: 0 25px;
+    box-sizing: border-box;
+    background: #3F4137;
+    gap: 25px;
+}
+
+.logo {
+    width: 70px;
+    height: 60px;
+    flex-shrink: 0;
+    background: none;
+}
+
+.logo img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.auth-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.menu-btn {
+    display: inline-block;
+    padding: 9px 13px;
+    border-radius: 6px;
+    color: #fdc073;
+    text-decoration: none;
+    font-size: 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+}
+
+.menu-btn:hover {
+    color: #fff;
+    background: #555748;
+    text-decoration: none;
+}
+
+.logout-form {
+    display: inline;
+    margin: 0;
+}
+
+
+.page-title {
+    margin: 25px 30px;
+    font-size: 32px;
+    color: #3F4137;
+}
+
+
+.page-layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100vh - 120px);
+}
+
+
+.left-chapters {
+    flex: 0 0 230px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background: #eee;
+    border-right: 1px solid #ccc;
+    min-height: calc(100vh - 120px);
+}
+
+.left-chapters ul {
+    width: auto;
+    margin: 0;
+    padding: 20px;
+}
+
+.content {
+    flex: 1;
+    width: auto;
+    padding: 30px 40px;
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   СТРАНИЦА ТОВАРА
+   ========================= */
+
+.post-detail {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.post-detail h1 {
+    margin-top: 0;
+    color: #3F4137;
+}
+
+.post-photo {
+    margin: 20px 0;
+}
+
+.post-photo img {
+    max-width: 500px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.post-info {
+    margin: 20px 0;
+    padding: 15px 20px;
+    background: #f5f5f5;
+    border-left: 4px solid #3F4137;
+}
+
+.post-content {
+    margin: 25px 0;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   ЛАЙКИ
+   ========================= */
+
+.like-section {
+    margin: 25px 0;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.like-section form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.like-section button {
+    padding: 8px 15px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.like-section button:hover {
+    background: #f0f0f0;
+}
+
+
+/* =========================
+   РЕДАКТИРОВАНИЕ
+   ========================= */
+
+.author-actions {
+    margin: 25px 0;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.author-actions h3 {
+    margin-top: 0;
+}
+
+.author-actions a {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 8px 14px;
+    background: #3F4137;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.author-actions a:hover {
+    background: #555748;
+    text-decoration: none;
+}
+
+
+/* =========================
+   КОММЕНТАРИИ
+   ========================= */
+
+.comments {
+    margin-top: 35px;
+}
+
+.comments h2,
+.comment-form h2 {
+    color: #3F4137;
+}
+
+.comment {
+    margin: 15px 0;
+    padding: 15px 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 3px solid #3F4137;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.comment-header small {
+    color: #888;
+}
+
+.comment p {
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   ФОРМА КОММЕНТАРИЯ
+   ========================= */
+
+.comment-form {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.comment-form textarea {
+    width: 100%;
+    max-width: 700px;
+    min-height: 100px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+}
+
+.comment-form button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 5px;
+    background: #3F4137;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.comment-form button:hover {
+    background: #555748;
+}
